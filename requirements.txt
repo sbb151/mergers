@@ -1,3 +1,6 @@
 lseg-data>=2.0.0
 pandas>=1.5.0
 openpyxl>=3.0.0
+# httpx version constraint to avoid compatibility issues
+# See TROUBLESHOOTING.md for more details
+httpx>=0.24.0,<0.26.0

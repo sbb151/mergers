@@ -29,6 +29,17 @@ pip install -r requirements.txt
    - **Desktop Session**: LSEG Workspace/Eikon running on your machine
    - **Platform Session**: LSEG Data Platform credentials (app-key, client_id, client_secret)
 
+### ⚠️ Important: httpx Compatibility Issue
+
+If you encounter an error like `AttributeError: 'dict' object has no attribute 'url'`, this is due to a compatibility issue between `httpx` and `lseg-data`.
+
+**Quick fix:**
+```bash
+pip install "httpx<0.26.0"
+```
+
+Then restart your Python kernel/environment. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for more details.
+
 ## Quick Start
 
 ### Using Desktop Session (LSEG Workspace)
@@ -233,20 +244,31 @@ The LSEG M&A database provides:
 
 ## Troubleshooting
 
-### Session Connection Issues
+For detailed troubleshooting information, see **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)**.
+
+### Common Issues
+
+#### httpx Compatibility Error
+If you see `AttributeError: 'dict' object has no attribute 'url'`:
+```bash
+pip install "httpx<0.26.0"
+```
+Then restart your Python kernel/environment.
+
+#### Session Connection Issues
 
 **Desktop Session**: Ensure LSEG Workspace/Eikon is running and you're logged in.
 
 **Platform Session**: Verify your credentials are correct and you have appropriate permissions.
 
-### No Data Returned
+#### No Data Returned
 
 Check your filter criteria - it may be too restrictive. Try:
 - Expanding the date range
 - Removing some filters
 - Increasing the `top` parameter
 
-### Import Errors
+#### Import Errors
 
 Ensure all dependencies are installed:
 ```bash
