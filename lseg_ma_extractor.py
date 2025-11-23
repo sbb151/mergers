@@ -93,6 +93,7 @@ class LSEGMAExtractor:
                        transaction_status: Optional[List[str]] = None,
                        form_of_transaction: Optional[List[str]] = None,
                        target_public_status: Optional[str] = None,
+                       acquirer_public_status: Optional[str] = None,
                        select_fields: Optional[List[str]] = None,
                        top: int = 100) -> pd.DataFrame:
         """
@@ -107,6 +108,7 @@ class LSEGMAExtractor:
             transaction_status: List of statuses (e.g., ['Completed', 'Pending', 'Withdrawn'])
             form_of_transaction: List of transaction forms (e.g., ['Merger', 'Acquisition'])
             target_public_status: Target public status (e.g., 'Public', 'Private')
+            acquirer_public_status: Acquirer public status (e.g., 'Public', 'Private')
             select_fields: List of fields to retrieve
             top: Maximum number of results to return (default: 100)
 
@@ -137,6 +139,10 @@ class LSEGMAExtractor:
             # Target public status
             if target_public_status:
                 filter_parts.append(f"TargetPublicStatus eq '{target_public_status}'")
+
+            # Acquirer public status
+            if acquirer_public_status:
+                filter_parts.append(f"AcquirerPublicStatus eq '{acquirer_public_status}'")
 
             # Transaction status
             if transaction_status:

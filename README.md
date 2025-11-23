@@ -130,7 +130,21 @@ cross_border = extractor.search_ma_deals(
 )
 ```
 
-### Example 4: Custom Field Selection
+### Example 4: Public-to-Public Transactions
+
+```python
+# Filter by both target AND acquirer public status
+public_deals = extractor.search_ma_deals(
+    target_public_status='Public',
+    acquirer_public_status='Public',  # NEW parameter!
+    min_transaction_value=1000,  # $1B+
+    transaction_status=['Completed'],
+    start_date='2023-01-01',
+    top=100
+)
+```
+
+### Example 5: Custom Field Selection with Identifiers
 
 ```python
 deals = extractor.search_ma_deals(
@@ -138,11 +152,14 @@ deals = extractor.search_ma_deals(
     select_fields=[
         'TransactionAnnouncementDate',
         'TargetCompanyName',
+        'TargetRIC',           # Reuters Instrument Code
+        'TargetPermID',        # Permanent ID
+        'TargetISIN',          # International Securities ID
         'AcquirerCompanyName',
+        'AcquirerRIC',
+        'AcquirerPermID',
         'TransactionValueIncludingNetDebtOfTarget',
-        'DealSummary',
-        'AdvisorName',
-        'AdvisorRole'
+        'DealSummary'
     ],
     top=100
 )
@@ -150,22 +167,59 @@ deals = extractor.search_ma_deals(
 
 ## Available Fields
 
-Common fields you can select:
+### 📚 Comprehensive Field Reference
 
+For a **complete, detailed reference** of all 1,000+ available M&A data fields with definitions, data types, and usage examples, see **[FIELD_REFERENCE.md](FIELD_REFERENCE.md)**.
+
+### Quick Reference
+
+**Deal Information:**
+- `DealNumber` - Unique deal identifier
+- `DealPermID` - Permanent deal ID
 - `TransactionAnnouncementDate` - Deal announcement date
-- `TargetCompanyName` - Name of target company
-- `TargetCountry` - Target country code
-- `TargetRIC` - Target company RIC
-- `TargetPublicStatus` - Public/Private status
-- `AcquirerCompanyName` - Name of acquiring company
-- `AcquirerCountry` - Acquirer country code
-- `AcquirerRIC` - Acquirer company RIC
-- `TransactionValueIncludingNetDebtOfTarget` - Deal value in millions
+- `TransactionEffectiveDate` - Deal closing/completion date
+- `TransactionValueIncludingNetDebtOfTarget` - Deal value in millions (most comprehensive)
 - `TransactionStatus` - Status (Completed, Pending, Withdrawn, etc.)
 - `FormOfTransactionName` - Type (Merger, Acquisition, etc.)
 - `DealSummary` - Deal description
-- `AdvisorName` - Financial/Legal advisor name
-- `AdvisorRole` - Advisor role
+
+**Target Company:**
+- `TargetCompanyName` - Name of target company
+- `TargetRIC` - Reuters Instrument Code (e.g., "AAPL.O")
+- `TargetTicker` - Stock ticker symbol
+- `TargetISIN` - International Securities ID
+- `TargetPermID` - Permanent company ID
+- `TargetLEI` - Legal Entity Identifier
+- `TargetCountry` - Target country code (ISO 2-letter)
+- `TargetPublicStatus` - Public/Private/Subsidiary
+- `TargetMacroIndustry` - Broad industry sector
+- `TargetMidIndustry` - Specific industry
+
+**Acquirer Company:**
+- `AcquirerCompanyName` - Name of acquiring company
+- `AcquirerRIC` - Reuters Instrument Code
+- `AcquirerTicker` - Stock ticker symbol
+- `AcquirerISIN` - International Securities ID
+- `AcquirerPermID` - Permanent company ID
+- `AcquirerLEI` - Legal Entity Identifier
+- `AcquirerCountry` - Acquirer country code
+- `AcquirerPublicStatus` - Public/Private/Subsidiary
+- `AcquirerMacroIndustry` - Broad industry sector
+
+**Deal Terms:**
+- `PricePerShare` - Offer price per share
+- `PremiumPercentage` - Premium over market price
+- `ConsiderationStructure` - Payment method (Cash/Stock/Mixed)
+- `PercentageAcquired` - Percentage of target acquired
+- `AttitudeOfDeal` - Friendly/Hostile
+
+**Advisors:**
+- `TargetFinancialAdvisor` - Target's financial advisor(s)
+- `AcquirerFinancialAdvisor` - Acquirer's financial advisor(s)
+- `TargetLegalAdvisor` - Target's legal counsel
+- `AcquirerLegalAdvisor` - Acquirer's legal counsel
+
+**See [FIELD_REFERENCE.md](FIELD_REFERENCE.md) for 100+ additional fields including valuation multiples, financing details, regulatory information, and more.**
 
 ## Transaction Status Options
 
@@ -181,6 +235,34 @@ Common fields you can select:
 - `Acquisition` - Acquisition transactions
 - `Buyback` - Share buyback
 - `Reverse Takeover` - Reverse takeover
+
+## Public Status Options
+
+For both `target_public_status` and `acquirer_public_status` parameters:
+
+- `Public` - Publicly traded company
+- `Private` - Privately held company
+- `Subsidiary` - Subsidiary of another company
+- `Private Equity` - Private equity-owned entity
+- `Government Owned` - Government entity
+- `Joint Venture` - Joint venture entity
+
+**Example usage:**
+```python
+# Public company acquiring public company
+deals = extractor.search_ma_deals(
+    target_public_status='Public',
+    acquirer_public_status='Public',
+    ...
+)
+
+# Private equity acquisitions of public targets
+deals = extractor.search_ma_deals(
+    target_public_status='Public',
+    acquirer_public_status='Private Equity',
+    ...
+)
+```
 
 ## Export Options
 
