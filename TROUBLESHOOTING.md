@@ -51,7 +51,49 @@ Then restart Python.
 
 ---
 
-### 2. Session Connection Failed
+### 2. AttributeError: 'DataFrame' object has no attribute 'to_pandas'
+
+**Error Message:**
+```
+AttributeError: 'DataFrame' object has no attribute 'to_pandas'
+```
+
+**Cause:** This error occurs because the `rd.discovery.search()` function already returns a pandas DataFrame directly in newer versions of `lseg-data`, not an object with a `.to_pandas()` method.
+
+**Solution:**
+
+This has been fixed in the latest version of the script. If you're using an older version:
+
+1. **Update the script:**
+   ```bash
+   git pull origin claude/lseg-ma-data-extraction-01UNjWFPUMqQWct3491M34yG
+   ```
+
+2. **Or manually fix** the code in `lseg_ma_extractor.py` around line 193:
+
+   Replace:
+   ```python
+   df = response.to_pandas()
+   ```
+
+   With:
+   ```python
+   # Handle both old and new API versions
+   if isinstance(response, pd.DataFrame):
+       df = response
+   elif hasattr(response, 'to_pandas'):
+       df = response.to_pandas()
+   elif hasattr(response, 'data') and hasattr(response.data, 'df'):
+       df = response.data.df
+   else:
+       raise TypeError(f"Unexpected response type: {type(response)}")
+   ```
+
+The updated script automatically handles both old and new API response formats.
+
+---
+
+### 3. Session Connection Failed
 
 **Error:** "Failed to open session"
 
@@ -71,7 +113,7 @@ Then restart Python.
 
 ---
 
-### 3. Empty DataFrame Returned
+### 4. Empty DataFrame Returned
 
 **Issue:** `search_ma_deals()` returns an empty DataFrame
 
@@ -112,7 +154,7 @@ Then restart Python.
 
 ---
 
-### 4. ModuleNotFoundError: No module named 'lseg'
+### 5. ModuleNotFoundError: No module named 'lseg'
 
 **Error:** `ModuleNotFoundError: No module named 'lseg'` or `'lseg.data'`
 
@@ -123,7 +165,7 @@ pip install lseg-data pandas openpyxl
 
 ---
 
-### 5. Permission/Authorization Errors
+### 6. Permission/Authorization Errors
 
 **Error:** 401 Unauthorized or 403 Forbidden
 
@@ -144,7 +186,7 @@ pip install lseg-data pandas openpyxl
 
 ---
 
-### 6. SSL/Certificate Errors
+### 7. SSL/Certificate Errors
 
 **Error:** SSL certificate verification failed
 
@@ -168,7 +210,7 @@ sudo apt-get update && sudo apt-get install ca-certificates
 
 ---
 
-### 7. Rate Limiting Errors
+### 8. Rate Limiting Errors
 
 **Error:** 429 Too Many Requests
 
@@ -188,7 +230,7 @@ deals2 = extractor.search_ma_deals(...)
 
 ---
 
-### 8. Memory Issues with Large Datasets
+### 9. Memory Issues with Large Datasets
 
 **Issue:** Running out of memory when retrieving large datasets
 
@@ -236,7 +278,7 @@ deals2 = extractor.search_ma_deals(...)
 
 ---
 
-### 9. Jupyter Notebook Kernel Crashes
+### 10. Jupyter Notebook Kernel Crashes
 
 **Solutions:**
 
@@ -256,7 +298,7 @@ deals2 = extractor.search_ma_deals(...)
 
 ---
 
-### 10. Date Format Errors
+### 11. Date Format Errors
 
 **Issue:** Date filters not working as expected
 

@@ -189,8 +189,17 @@ class LSEGMAExtractor:
                 top=top
             )
 
-            # Convert to DataFrame
-            df = response.to_pandas()
+            # The response is already a DataFrame in newer versions of lseg-data
+            # Handle both old API (with .to_pandas()) and new API (direct DataFrame)
+            if isinstance(response, pd.DataFrame):
+                df = response
+            elif hasattr(response, 'to_pandas'):
+                df = response.to_pandas()
+            elif hasattr(response, 'data') and hasattr(response.data, 'df'):
+                df = response.data.df
+            else:
+                raise TypeError(f"Unexpected response type: {type(response)}")
+
             logger.info(f"Retrieved {len(df)} M&A deals")
 
             return df
